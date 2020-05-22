@@ -205,18 +205,18 @@ def run_teamnames(soup, hostname):
            hostname == awayteam + " ST":
             pass
         else:
-            print "running similar()..."
-            print awayteam, hometeam
+            print("running similar()...")
+            print(awayteam, hometeam)
             home_similar = le2.similar(hostname, hometeam)
             away_similar = le2.similar(hostname, awayteam)
     
             if home_similar > away_similar and home_similar > 0.7:
-                print "similarity:", home_similar
+                print("similarity:", home_similar)
                 homeaway = "HOME"
                 teamnames = (hostname, awayteam)
                 return homeaway, teamnames
             elif away_similar > home_similar and away_similar > 0.7:
-                print "similarity:", away_similar
+                print("similarity:", away_similar)
                 homeaway = "AWAY"
                 teamnames = (hostname, hometeam)
                 return homeaway, teamnames
@@ -224,7 +224,7 @@ def run_teamnames(soup, hostname):
         print ("\n\nThe boxscore page is using a different name than"
                " the given hostname. Do either of these options look like "
                "they could be for the host team?")
-        print "\nTeam A:", awayteam, "\nTeam B:", hometeam
+        print("\nTeam A:", awayteam, "\nTeam B:", hometeam)
         selection = raw_input("\n'A' or 'B' or 'neither': ").upper()
         if selection == 'A':
             homeaway = "AWAY"
@@ -273,7 +273,7 @@ def get_starters(soup, homeaway):
         
         starters.append(name)                
     
-    print "starters:", starters
+    print("starters:", starters)
     return starters
 
 
@@ -456,8 +456,8 @@ def get_boxscores(bigsoup, schedule_url, hostname):
     #bigsoup = le2.get_site(schedule_url)
     
     read_already = le2.been_read(hostname)
-    print "\nGames read already:", len(read_already)
-    for r in read_already: print r
+    print("\nGames read already:", len(read_already))
+    for r in read_already: print(r)
     
     base = schedule_url[: schedule_url.find("/sports") ]
     
@@ -479,8 +479,8 @@ def get_boxscores(bigsoup, schedule_url, hostname):
                     if base+goal not in read_already:
                         urls.append(base+goal)
     
-    print "\nGames found:", len(urls)
-    for u in urls: print u
+    print("\nGames found:", len(urls))
+    for u in urls: print(u)
     return urls
 
 
@@ -501,8 +501,8 @@ def get_boxscores1(soup, base, read_already):
                 if base+goal not in read_already:
                     urls.append(base+goal)
     
-    print "Games found:", len(urls)
-    for u in urls: print u
+    print("Games found:", len(urls))
+    for u in urls: print(u)
     return urls
 
 
@@ -520,11 +520,11 @@ def scrape_all(soup, schedule_url, hostname):
     links = get_boxscores(soup, schedule_url, hostname) #111
     #links = ['https://www.santaclarabroncos.com/sports/m-baskbl/2017-18/boxscores/20180201_230l.xml?view=plays#prd2']
     if links == None:
-        print "All available data has been scraped alraedy, according to", \
-              "TEAMNAME_DONE.txt" 
+        print("All available data has been scraped alraedy, according to", \
+              "TEAMNAME_DONE.txt")
     
     for l in links:
-        print "WORKING ON:", l
+        print("WORKING ON:", l)
         
         r = requests.get(l)
         soup = BeautifulSoup(r.content, "html.parser")   
@@ -535,7 +535,7 @@ def scrape_all(soup, schedule_url, hostname):
         
         mw = menwomen(soup)
         
-        print hostname, teamnames, homeaway, mw
+        print(hostname, teamnames, homeaway, mw)
         
         filename = hostname.replace(' ', '').lower()        
         arg = 1
@@ -553,7 +553,7 @@ def scrape_all(soup, schedule_url, hostname):
         with open(filename + "DONE.txt",'a') as file:
             file.write(l + "\n")
 
-        print "\n"
+        print("\n")
     
     le2.dataframe(hostname)
     

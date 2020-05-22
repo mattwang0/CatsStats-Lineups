@@ -59,7 +59,7 @@ def get_starters(soup, homeaway, url):
         #run helpers for tag-style
         (starters, soup) = get_starters2(url,homeaway)
         
-    print "starters:", starters
+    print("starters:", starters)
     return (starters, soup)
     
 
@@ -620,7 +620,7 @@ def pbp_check(soup):
     if 'Play-by-Play' in soup.text:
         return True
     else:
-        print "Box score page has no play-by-play data."
+        print("Box score page has no play-by-play data.")
         return False
 
 
@@ -653,7 +653,7 @@ def get_boxscores(soup, sch_url, year, filename):
     except:
         read_already = []
         
-    print "read already:", len(read_already), read_already
+    print("read already:", len(read_already), read_already)
     
     if 'baskbl-sched' in sch_url:
         return get_boxscores1(soup,year,sch_url,read_already)
@@ -750,8 +750,8 @@ def get_boxscores1(soup,year,sch_url,read_already):
                     if to_add not in read_already:
                         urls.append(to_add.encode('ascii', 'ignore'))
     
-    print "urls length:", len(urls)
-    for url in urls: print url
+    print("urls length:", len(urls))
+    for url in urls: print(url)
     return urls
 
 
@@ -767,7 +767,7 @@ years_str - ex: 2017-2018 - needed to find dropdown selection
 Returns: a BeautifulSoup object for the proper year's schedule
 '''
 def get_correct_site(url, years_str):
-    print "running webdriver..."
+    print("running webdriver...")
     
     browser = webdriver.Firefox() 
     browser.get(url)
@@ -803,7 +803,7 @@ def get_boxscores2(soup,sch_url,read_already):
         if link not in read_already:
             urls.append(link)
     
-    for u in urls: print u
+    for u in urls: print(u)
     return urls
 
 
@@ -840,26 +840,26 @@ def run_teamnames(soup, hostname, teamnames):
            hostname == awayteam + " ST":
             pass
         else:
-            print "running similar()..."
-            print awayteam, hometeam
+            print("running similar()...")
+            print(awayteam, hometeam)
             home_similar = le2.similar(hostname, hometeam)
             away_similar = le2.similar(hostname, awayteam)
     
             if home_similar > away_similar and home_similar > 0.7:
-                print "similarity:", home_similar
+                print("similarity:", home_similar)
                 homeaway = "HOME"
                 teamnames = (hostname, awayteam)
                 return homeaway, teamnames
             elif away_similar > home_similar and away_similar > 0.7:
-                print "similarity:", away_similar
+                print("similarity:", away_similar)
                 homeaway = "AWAY"
                 teamnames = (hostname, hometeam)
                 return homeaway, teamnames
 
-        print ("\n\nThe boxscore page is using a different name than"
+        print("\n\nThe boxscore page is using a different name than"
                " the given hostname. Do either of these options look like "
                "they could be for the host team?")
-        print "\nTeam A:", awayteam, "\nTeam B:", hometeam
+        print("\nTeam A:", awayteam, "\nTeam B:", hometeam)
         selection = raw_input("\n'A' or 'B' or 'neither': ").upper()
         if selection == 'A':
             homeaway = "AWAY"
@@ -894,7 +894,7 @@ def run(soup, hostname, sch_url, year):
     print
     no_data = 0
     for l in links:
-        print "\n\nworking on:", l
+        print("\n\nworking on:", l)
         
         r = requests.get(l)
         soup = BeautifulSoup(r.content, "html.parser")
@@ -907,14 +907,14 @@ def run(soup, hostname, sch_url, year):
             
             mw = menwomen(soup)
             
-            print hostname, teamnames, homeaway, mw
+            print(hostname, teamnames, homeaway, mw)
             
             (starters, soup) = get_starters(soup, homeaway, l)
             
             arg = 2
             pbp = get_pbp(soup, homeaway, mw)
             if pbp == None:
-                print "No pbp data for this game\n\n"
+                print("No pbp data for this game\n\n")
                 no_data = no_data + 1
             else:
                 play_table = le2.copy_table(pbp, starters, arg)
@@ -926,7 +926,7 @@ def run(soup, hostname, sch_url, year):
             file.write(l + "\n")
         
     le2.dataframe(hostname)
-    print "\nGames without data:", no_data
+    print("\nGames without data:", no_data)
     
 
 def main(soup,sch_url,hostname,year):

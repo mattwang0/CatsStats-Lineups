@@ -114,8 +114,8 @@ def get_pbp(soup, homeaway, mw):
                 elif homeaway == "HOME":
                     scores.append(flip(str(s.contents[1]).strip()))
                 else:
-                    print "ERROR with homeaway argument. Likely doesn't equal" \
-                          + " 'HOME' or 'AWAY'"
+                    print("ERROR with homeaway argument. Likely doesn't equal" \
+                          + " 'HOME' or 'AWAY'")
                     break
             except:
                 scores.append("")
@@ -191,12 +191,12 @@ def copy_table(cols, starters, arg):
         midsub = court_holder[1]
                 
         temp = []
-        temp.append(cols[0][index].encode('ascii', 'ignore')) #times
-        temp.append(cols[1][index].encode('ascii', 'ignore')) #scores
+        temp.append(cols[0][index]) #times
+        temp.append(cols[1][index]) #scores
         #team details
-        temp.append(cols[2][index].encode('ascii', 'ignore').replace(',', '.'))
+        temp.append(cols[2][index].replace(',', '.'))
         #opponent details
-        temp.append(cols[3][index].encode('ascii', 'ignore').replace(',', '.'))
+        temp.append(cols[3][index].replace(',', '.'))
         if midsub:
             temp.append(["SUBSTITUTION IN PROGRESS"])
         else:
@@ -326,12 +326,12 @@ None - if exhibition game
 def get_starters(soup, homeaway):
     game_info = soup.find('aside', {'class':'game-details'}).text.upper()
     if 'EXHIBITION' in game_info:
-        print "exhibition game. returning None."
+        print("exhibition game. returning None.")
         return None
     
     table_info = soup.find('table', {'class':'sidearm-table'}).text.upper()
     if "EXH" in table_info:
-        print "exhibition game. returning None."
+        print("exhibition game. returning None.")
         return None
     
     starters = []
@@ -341,7 +341,7 @@ def get_starters(soup, homeaway):
     else:
         table = soup.find('div', {'id':'DataTables_Table_1_wrapper'})
     
-    if not table: print table #111 - why is it always crashing?!
+    if not table: print(table)
     
     rows = table.find_all('th', {'scope':'row'})
     for row in rows[:5]:
@@ -582,8 +582,8 @@ def lineup_table(in_table, names, filename, date, arg):
             lineup_atm = row[4]
     #handle games with no sub info
     if len(subrows) < 6:
-        print "\nERROR: it's likely the game page exists with play-by-play " \
-              "data but has no substitution information. Skipping game.\n\n"
+        print("\nERROR: it's likely the game page exists with play-by-play " \
+              "data but has no substitution information. Skipping game.\n\n")
         return
     subrows.append(len(in_table)-1)
     
@@ -593,7 +593,7 @@ def lineup_table(in_table, names, filename, date, arg):
     for n, x in enumerate(subrows[:-1]):
         temp = []
         
-        temp.append(date.encode('ascii', 'ignore')) #date
+        temp.append(date) #date
         temp.append(names[0]) #team name
         temp.append(names[1]) #opponent name
         temp.append(in_table[subrows[n]][0]) #start time
@@ -669,7 +669,7 @@ def lineup_table(in_table, names, filename, date, arg):
     with open(filename+'_all_lineups.csv', 'a') as f:
         df.to_csv(f, header=False)
         
-    print df.head()
+    print(df.head())
     #print df[:5].to_string()
 
             
@@ -1115,18 +1115,18 @@ def run_teamnames(soup, hostname):
            hostname == awayteam + " ST":
             pass
         else:
-            print "running similar()..."
-            print awayteam, hometeam
+            print("running similar()...")
+            print(awayteam, hometeam)
             home_similar = le2.similar(hostname, hometeam)
             away_similar = le2.similar(hostname, awayteam)
     
             if home_similar > away_similar and home_similar > 0.7:
-                print "similarity:", home_similar
+                print("similarity:", home_similar)
                 homeaway = "HOME"
                 teamnames = (hostname, awayteam)
                 return homeaway, teamnames
             elif away_similar > home_similar and away_similar > 0.7:
-                print "similarity:", away_similar
+                print("similarity:", away_similar)
                 homeaway = "AWAY"
                 teamnames = (hostname, hometeam)
                 return homeaway, teamnames
@@ -1134,7 +1134,7 @@ def run_teamnames(soup, hostname):
         print ("\n\nThe boxscore page is using a different name than"
                " the given hostname. Do either of these options look like "
                "they could be for the host team?")
-        print "\nTeam A:", awayteam, "\nTeam B:", hometeam
+        print("\nTeam A:", awayteam, "\nTeam B:", hometeam)
         selection = raw_input("\n'A' or 'B' or 'neither': ").upper()
         if selection == 'A':
             homeaway = "AWAY"
@@ -1163,11 +1163,11 @@ def scrape_all(soup, schedule_url, hostname):
     links = get_boxscores(soup, schedule_url, hostname)
     #links = ['http://www.pepperdinewaves.com/sports/m-baskbl/stats/2017-2018/pepmbb01.html'] #111
     if links == None:
-        print "All available data has been scraped alraedy, according to", \
-              "TEAMNAME_DONE.txt" 
+        print("All available data has been scraped alraedy, according to", \
+              "TEAMNAME_DONE.txt")
     
     for l in links:        
-        print "WORKING ON:", l
+        print("\nWORKING ON:", l)
         
         soup = get_site(l)    
         
@@ -1175,14 +1175,14 @@ def scrape_all(soup, schedule_url, hostname):
         
         mw = menwomen(soup)
         
-        print hostname, teamnames, homeaway, mw
+        print(hostname, teamnames, homeaway, mw)
         
         filename = hostname.replace(' ', '').lower()
         arg = 0
         
         starters = get_starters(soup, homeaway)
         if not starters:
-            print "skipping exhibition game"
+            print("skipping exhibition game")
         else:
             pbp = get_pbp(soup, homeaway, mw)
             play_table = copy_table(pbp, starters, arg)
@@ -1192,7 +1192,7 @@ def scrape_all(soup, schedule_url, hostname):
         with open(hostname.replace(' ', '').lower()+"DONE.txt",'a') as file:
             file.write("\n" + l)
 
-        print "\n"
+        print("\n")
     
     dataframe(hostname) #111
     
@@ -1223,7 +1223,7 @@ def dataframe(hostname):
         #print "\n\nIOError: HOSTNAME_all_lineups.csv not found. Exiting:\n",\
               #hostname,"\n\n"
         #raise UserWarning("Error: HOSTNAME_all_lineups.csv not found.")
-        print "Error: HOSTNAME_all_lineups.csv not found."
+        print("Error: HOSTNAME_all_lineups.csv not found.")
         return
     
     df = df.fillna('MISSING')
@@ -1240,8 +1240,8 @@ def dataframe(hostname):
     #df['TOTAL TIME'] = df['TOTAL TIME'].apply(to_clock)
     df = df.reset_index(drop=True)
 
-    print "\n\nMASTER CONSOLIDATED DF:"
-    print df.head()
+    print("\n\nMASTER CONSOLIDATED DF:")
+    print(df.head())
     
     #get 1/2/3/4-player lineups 
     for n in range(1, 5):
@@ -1251,7 +1251,7 @@ def dataframe(hostname):
     
     
     #5-PLAYER LINEUPS
-    print "\ngetting 5 player lineup..."
+    print("\ngetting 5 player lineup...")
     df5 = df.copy()
     #filter out lineups that were on court for less than 1% of possessions
     threshold = df5['TOTAL TIME'].sum() * ONE_PCT
@@ -1490,7 +1490,7 @@ df - the full dataframe; 5-player version
 n - number of players in lineup as integer (ex: 3) 
 '''
 def n_player_lineups(df, n):
-    print "\ngetting", n, "player lineup..."
+    print("\ngetting", n, "player lineup...")
     #creaete df with appropriate columns for given argument n
     headers_base = ['TOTAL TIME',\
                '+/-',"POSS.","FGM","FGA","2ptFGM","2ptFGA","3ptFGM","3ptFGA",\
@@ -1586,7 +1586,7 @@ base - base of url to add boxscore extention to
 read_already - list of urls read aleady
 '''
 def get_alt1_boxscores(bigsoup, base, read_already):
-    print "get_alt1_boxscores"
+    print("get_alt1_boxscores")
       
     results_soup = bigsoup.find_all("div", {"class":"schedule_game_results"})
 
@@ -1619,7 +1619,7 @@ Returns:
 urls - list of all urls to boxscores for each game on the team's schedule
 '''
 def get_alt2_boxscores(bigsoup, base, read_already):
-    print "get_alt2_boxscores - trying with webdriver"
+    print("get_alt2_boxscores - trying with webdriver")
     
     results_soup = bigsoup.find_all("td", {"class":"schedule_dgrd_time/result"})
     urls = []
@@ -1647,10 +1647,10 @@ def get_boxscores(bigsoup, schedule_url, hostname):
     #bigsoup = get_site(schedule_url)
     
     read_already = been_read(hostname)
-    print "Games read already:", len(read_already)
-    for r in read_already: print r
+    print("Games read already:", len(read_already))
+    for r in read_already: print(r)
     
-    base = schedule_url[: schedule_url.find("/schedule") ]
+    base = schedule_url[: schedule_url.find("/sports") ]
     
     #get links to all games on schedule page
     #try 'normal' team schedule html layout first
@@ -1670,14 +1670,14 @@ def get_boxscores(bigsoup, schedule_url, hostname):
                 if "BOX SCORE" in l.text.upper():
                     link_holder = l.find("a", {"target":"_blank"})
                     if not link_holder: continue
-                    link = base + link_holder.get('href').encode('ascii','ignore')
+                    link = base + link_holder.get('href')
                     if 'boxscore' in link:
                         boxscore_links_exist = True
                         if link not in read_already:
                             links.append(link)
     
-    print "Games found:", len(links)
-    for l in links: print l
+    print("Games found:", len(links))
+    for l in links: print (l)
     return links
 
 
@@ -1687,7 +1687,7 @@ Handle all different ways we encounter names
 Return name in format: LASTNAME.FIRSTNAME
 '''
 def nice_name(name):
-    name = name.rstrip().strip().upper().encode('ascii', 'ignore')
+    name = name.rstrip().strip().upper()
 
     #strip of leading and trailing periods/commas
     trailing_period_removed = False
